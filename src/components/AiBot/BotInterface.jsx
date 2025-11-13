@@ -35,6 +35,7 @@ async function callFireworks(prompt) {
 }
 
 function BotInterface({ height = 700, setActive }) {
+
   const [message, setMessage] = useState("");
   const [messageHistory, setMessageHistory] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -54,25 +55,27 @@ function BotInterface({ height = 700, setActive }) {
 
   useEffect(() => {
     if (chatContainerRef.current) {
-      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+      chatContainerRef.current.scrollTop =
+        chatContainerRef.current.scrollHeight;
     }
   }, [messageHistory]);
 
   const fetchData = async (userPrompt) => {
     setIsLoading(true);
+
     try {
       const prompt =
         InitialPrompt + "\nUser: " + userPrompt + "\nAssistant:";
-
       const resultText = await callFireworks(prompt);
 
       let responseMessage = resultText;
-
       try {
         const parsed = JSON.parse(resultText);
         responseMessage =
-          parsed.message || parsed.text || JSON.stringify(parsed);
-      } catch {}
+          parsed.message ||
+          parsed.text ||
+          JSON.stringify(parsed);
+      } catch (_) {}
 
       setMessageHistory((prev) => [
         ...prev,
@@ -86,7 +89,10 @@ function BotInterface({ height = 700, setActive }) {
         ...prev,
         {
           user: "Popcorn Pilot",
-          msg: { movieNames: [], message: "Oops! Something went wrong." },
+          msg: {
+            movieNames: [],
+            message: "Oops! Something went wrong.",
+          },
         },
       ]);
     } finally {
@@ -112,7 +118,6 @@ function BotInterface({ height = 700, setActive }) {
       className="bg-white rounded-2xl shadow-lg p-4 flex flex-col mx-auto text-black"
       style={{
         height: `${height}px`,
-        maxHeight: "90vh",
         width: "95%",
         maxWidth: "500px",
         backgroundImage:
@@ -129,7 +134,7 @@ function BotInterface({ height = 700, setActive }) {
         <img
           src="https://media.tenor.com/NGFeo-Nn7WQAAAAi/milk-and-mocha-popcorn.gif"
           alt="watchingTV"
-          className="absolute h-16 sm:h-20 top-2 sm:top-0 left-1/2 -translate-x-1/2"
+          className="absolute h-16 sm:h-20 top-2 left-1/2 -translate-x-1/2"
         />
 
         <button
@@ -174,15 +179,14 @@ function BotInterface({ height = 700, setActive }) {
         </div>
       </div>
 
-      <div className="flex items-center mt-3 border border-gray-300 rounded-lg px-3 py-2 focus-within:ring-2 focus-within:ring-blue-500 bg-white">
+      <div className="flex items-center mt-3 border border-gray-300 rounded-lg px-3 py-2 bg-white">
         <input
           type="text"
           className="flex-grow outline-none bg-transparent text-black"
-          placeholder="Type a message..."
+          placeholder="Type a message…"
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && sendMessage()}
-          disabled={isLoading}
         />
 
         <button
@@ -190,9 +194,8 @@ function BotInterface({ height = 700, setActive }) {
             isLoading ? "bg-gray-400" : "bg-blue-500 hover:bg-blue-600"
           } text-white rounded-full w-10 h-10 flex items-center justify-center text-2xl`}
           onClick={sendMessage}
-          disabled={isLoading}
         >
-          {isLoading ? "..." : "▲"}
+          {isLoading ? "…" : "▲"}
         </button>
       </div>
     </div>
