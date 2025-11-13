@@ -19,12 +19,15 @@ async function callFireworks(prompt) {
         max_tokens: 512,
       }),
     });
+
     if (!res.ok) {
       const txt = await res.text();
       throw new Error(`Fireworks API error: ${res.status} ${txt}`);
     }
+
     const j = await res.json();
     return j.output || j.text || JSON.stringify(j);
+
   } catch (e) {
     console.error("Fireworks error:", e);
     throw e;
@@ -43,11 +46,10 @@ function BotInterface({ height = 700, setActive }) {
       msg: {
         movieNames: [],
         message:
-          "Hey there! 🍿 I'm Popcorn Pilot, your movie navigator. Ask me anything about movies.",
+          "Hey there! 🍿 I'm Popcorn Pilot, your movie navigator. Ask me anything about movies!",
       },
     };
     if (messageHistory.length === 0) setMessageHistory([obj]);
-    // eslint-disable-next-line
   }, []);
 
   useEffect(() => {
@@ -59,23 +61,34 @@ function BotInterface({ height = 700, setActive }) {
   const fetchData = async (userPrompt) => {
     setIsLoading(true);
     try {
-      const prompt = InitialPrompt + "\nUser: " + userPrompt + "\nAssistant:";
+      const prompt =
+        InitialPrompt + "\nUser: " + userPrompt + "\nAssistant:";
+
       const resultText = await callFireworks(prompt);
+
       let responseMessage = resultText;
+
       try {
         const parsed = JSON.parse(resultText);
-        responseMessage = parsed.message || parsed.text || JSON.stringify(parsed);
-      } catch (_) {}
+        responseMessage =
+          parsed.message || parsed.text || JSON.stringify(parsed);
+      } catch {}
+
       setMessageHistory((prev) => [
         ...prev,
-        { user: "Popcorn Pilot", msg: { movieNames: [], message: responseMessage } },
+        {
+          user: "Popcorn Pilot",
+          msg: { movieNames: [], message: responseMessage },
+        },
       ]);
     } catch (error) {
       setMessageHistory((prev) => [
         ...prev,
-        { user: "Popcorn Pilot", msg: { movieNames: [], message: "Oops! Something went wrong." } },
+        {
+          user: "Popcorn Pilot",
+          msg: { movieNames: [], message: "Oops! Something went wrong." },
+        },
       ]);
-      console.log("Error: ", error);
     } finally {
       setIsLoading(false);
     }
@@ -83,7 +96,12 @@ function BotInterface({ height = 700, setActive }) {
 
   const sendMessage = () => {
     if (message.trim() === "" || isLoading) return;
-    const newMessage = { user: "You", msg: { movieNames: [], message } };
+
+    const newMessage = {
+      user: "You",
+      msg: { movieNames: [], message },
+    };
+
     setMessageHistory((prev) => [...prev, newMessage]);
     fetchData(message);
     setMessage("");
@@ -97,7 +115,8 @@ function BotInterface({ height = 700, setActive }) {
         maxHeight: "90vh",
         width: "95%",
         maxWidth: "500px",
-        backgroundImage: "url('https://media1.tenor.com/m/S89fWSFaFowAAAAd/colors-pattern.gif')",
+        backgroundImage:
+          "url('https://media1.tenor.com/m/S89fWSFaFowAAAAd/colors-pattern.gif')",
         backgroundSize: "cover",
         backgroundPosition: "center",
       }}
@@ -113,33 +132,45 @@ function BotInterface({ height = 700, setActive }) {
           className="absolute h-16 sm:h-20 top-2 sm:top-0 left-1/2 -translate-x-1/2"
         />
 
-        <div>
-          <button
-            className="text-2xl font-bold hover:scale-150 duration-300 hover:text-red-600"
-            onClick={() => setActive && setActive(false)}
-          >
-            X
-          </button>
-        </div>
+        <button
+          className="text-2xl font-bold hover:scale-150 duration-300 hover:text-red-600"
+          onClick={() => setActive(false)}
+        >
+          X
+        </button>
       </div>
 
-      <div className="relative rounded-xl overflow-hidden" style={{ height: `calc(${height}px - 100px)` }}>
+      <div
+        className="relative rounded-xl overflow-hidden"
+        style={{ height: `calc(${height}px - 100px)` }}
+      >
         <div className="absolute inset-0 bg-gray-100 opacity-30"></div>
-        <div ref={chatContainerRef} className="relative flex-grow overflow-auto p-3 h-full">
+
+        <div
+          ref={chatContainerRef}
+          className="relative flex-grow overflow-auto p-3 h-full"
+        >
           {messageHistory.map((msg, index) => (
             <Message key={index} msgObj={msg} />
           ))}
+
           {isLoading && (
             <div className="flex justify-start my-2">
               <div className="bg-white p-3 rounded-lg max-w-xs text-black">
                 <div className="flex space-x-2">
                   <div className="w-2 h-2 rounded-full bg-gray-400 animate-bounce"></div>
-                  <div className="w-2 h-2 rounded-full bg-gray-400 animate-bounce" style={{ animationDelay: "0.2s" }}></div>
-                  <div className="w-2 h-2 rounded-full bg-gray-400 animate-bounce" style={{ animationDelay: "0.4s" }}></div>
+                  <div
+                    className="w-2 h-2 rounded-full bg-gray-400 animate-bounce"
+                    style={{ animationDelay: "0.2s" }}
+                  ></div>
+                  <div
+                    className="w-2 h-2 rounded-full bg-gray-400 animate-bounce"
+                    style={{ animationDelay: "0.4s" }}
+                  ></div>
                 </div>
               </div>
             </div>
-          ))}
+          )}
         </div>
       </div>
 
@@ -153,8 +184,11 @@ function BotInterface({ height = 700, setActive }) {
           onKeyDown={(e) => e.key === "Enter" && sendMessage()}
           disabled={isLoading}
         />
+
         <button
-          className={`ml-2 ${isLoading ? "bg-gray-400" : "bg-blue-500 hover:bg-blue-600"} text-white rounded-full w-10 h-10 flex items-center justify-center text-2xl`}
+          className={`ml-2 ${
+            isLoading ? "bg-gray-400" : "bg-blue-500 hover:bg-blue-600"
+          } text-white rounded-full w-10 h-10 flex items-center justify-center text-2xl`}
           onClick={sendMessage}
           disabled={isLoading}
         >
