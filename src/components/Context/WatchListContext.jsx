@@ -1,10 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react";
-// import supabase disabled
 import { AuthContext } from "./Auth";
-
-const supabaseUrl = import.meta.env.VITE_PROJ_URL;
-const supabaseKey = import.meta.env.VITE_SUPABASE_TMDB_API_KEY;
-const supabase = createClient(supabaseUrl, supabaseKey);
 
 export const MyContext = createContext();
 
@@ -13,6 +8,7 @@ export const MyProvider = ({ children }) => {
   const [watchListTV, setWatchListTV] = useState([]);
   const { email, authenticated } = useContext(AuthContext);
 
+  // Load from localStorage
   useEffect(() => {
     let watch = localStorage.getItem("watchList");
     let watchTV = localStorage.getItem("watchListTV");
@@ -22,6 +18,7 @@ export const MyProvider = ({ children }) => {
     } else {
       setWatchList(JSON.parse(watch));
     }
+
     if (!watchTV) {
       localStorage.setItem("watchListTV", JSON.stringify([]));
     } else {
@@ -29,26 +26,11 @@ export const MyProvider = ({ children }) => {
     }
   }, []);
 
-  async function updateWatchList() {
-    console.log(authenticated, email)
-    if(!authenticated) return
-    const { error } = await supabase
-      .from("movie-hub-authentication")
-      .update({ watchList: JSON.stringify(watchList) })
-      .eq("email", email);
-
-    if (error) {
-      console.error(error);
-      alert("There was some error adding you. Please try again.");
-    } else {
-      console.log("watchList updated succesfully")
-    }
-  }
-
+  // Save to localStorage only (NO SUPABASE)
   useEffect(() => {
-    updateWatchList();
     localStorage.setItem("watchList", JSON.stringify(watchList));
-  }, [watchList]);
+    localStorage.setItem("watchListTV", JSON.stringify(watchListTV));
+  }, [watchList, watchListTV]);
 
   return (
     <MyContext.Provider
