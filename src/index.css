@@ -1,0 +1,7 @@
+
+/* CineMate modern theme */
+:root{--bg:#071029;--card:#0f1724;--muted:#9aa4b2;--accent:#7c3aed}
+html,body,#root{height:100%}body{margin:0;font-family:Inter,system-ui;background:linear-gradient(180deg,var(--bg),#061026);color:#e6eef8}
+.container{max-width:1100px;margin:0 auto;padding:20px}
+.card{background:rgba(255,255,255,0.02);border-radius:12px;padding:16px;border:1px solid rgba(255,255,255,0.03)}
+.btn{background:linear-gradient(90deg,var(--accent),#ec4899);color:#fff;padding:8px 12px;border-radius:10px;border:none}
